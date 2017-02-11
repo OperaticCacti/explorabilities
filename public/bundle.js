@@ -115,9 +115,50 @@
 	//verifies the user's token serverside.
 	//check out line 60 in server/db/users/usersController.js
 	function requireAuth(nextState, replace, blah) {
+	  function getCookie(cname) {
+	    var name = cname + "=";
+	    var ca = document.cookie.split(';');
+	    for (var i = 0; i < ca.length; i++) {
+	      var c = ca[i];
+	      while (c.charAt(0) === ' ') {
+	        c = c.substring(1);
+	      }
+	      if (c.indexOf(name) !== -1) {
+	        return c.substring(name.length, c.length);
+	      }
+	    }
+	    return "";
+	  }
+	  var tokenFromCookie = getCookie('token');
+	  if (tokenFromCookie) {
+	    localStorage.token = tokenFromCookie;
+	  }
+	  // console.log(document.cookie);
+	  // if (document.cookie) {
+	  //   var token = document.cookie.slice(6);
+	  //   axios.get('/users/auth', {
+	  //     headers: { token: token || null }
+	  //   })
+	  //   .then((res) => {
+	  //     console.log(res);
+	  //     //res.data.user = user email
+	  //     //res.data.id = user id
+	  //     blah(); //requireauth doesn't exit until I'm called! I do nothing!
+	  //   })
+	  //   .catch((err) => {
+	  //     replace({
+	  //       pathname: '/auth/signin',
+	  //       state: {
+	  //         nextPathName: nextState.location.pathname
+	  //       }
+	  //     });
+	  //     blah(); //I also do nothing!
+	  //   });    
+	  // } else {
 	  _axios2.default.get('/users/auth', {
 	    headers: { token: localStorage.token || null }
 	  }).then(function (res) {
+	    console.log(res);
 	    //res.data.user = user email
 	    //res.data.id = user id
 	    blah(); //requireauth doesn't exit until I'm called! I do nothing!
@@ -130,6 +171,7 @@
 	    });
 	    blah(); //I also do nothing!
 	  });
+	  // }
 	}
 
 /***/ },
@@ -425,8 +467,15 @@
 /* 4 */
 /***/ function(module, exports) {
 
+	/*
+	object-assign
+	(c) Sindre Sorhus
+	@license MIT
+	*/
+
 	'use strict';
 	/* eslint-disable no-unused-vars */
+	var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 	var hasOwnProperty = Object.prototype.hasOwnProperty;
 	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -447,7 +496,7 @@
 			// Detect buggy property enumeration order in older V8 versions.
 
 			// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-			var test1 = new String('abc');  // eslint-disable-line
+			var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
 			test1[5] = 'de';
 			if (Object.getOwnPropertyNames(test1)[0] === '5') {
 				return false;
@@ -476,7 +525,7 @@
 			}
 
 			return true;
-		} catch (e) {
+		} catch (err) {
 			// We don't expect any of the above to throw, but better to be safe.
 			return false;
 		}
@@ -496,8 +545,8 @@
 				}
 			}
 
-			if (Object.getOwnPropertySymbols) {
-				symbols = Object.getOwnPropertySymbols(from);
+			if (getOwnPropertySymbols) {
+				symbols = getOwnPropertySymbols(from);
 				for (var i = 0; i < symbols.length; i++) {
 					if (propIsEnumerable.call(from, symbols[i])) {
 						to[symbols[i]] = from[symbols[i]];
@@ -26725,6 +26774,12 @@
 	    return localStorage.token;
 	  },
 	  logout() {
+	    console.log(localStorage);
+	    // delete document.
+	    var deleteCookie = function ( name ) {
+	      document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	    };
+	    deleteCookie('token');
 	    delete localStorage.token;
 	  },
 	  loggedIn() {
@@ -26778,6 +26833,7 @@
 	    _this.handleSignin = _this.handleSignin.bind(_this);
 	    _this.handleSignup = _this.handleSignup.bind(_this);
 	    _this.routeToExplore = _this.routeToExplore.bind(_this);
+	    _this.facebook = _this.facebook.bind(_this);
 	    _this.setError = _this.setError.bind(_this);
 	    return _this;
 	  }
@@ -26811,7 +26867,8 @@
 	            _react2.default.cloneElement(this.props.children, {
 	              error: this.state.error,
 	              signin: this.handleSignin,
-	              signup: this.handleSignup
+	              signup: this.handleSignup,
+	              facebook: this.facebook
 	            })
 	          ),
 	          _react2.default.createElement(
@@ -26819,7 +26876,7 @@
 	            { id: 'authNav' },
 	            _react2.default.createElement(
 	              _reactRouter.Link,
-	              { to: 'auth/signin' },
+	              { to: '/auth/signin' },
 	              _react2.default.createElement(
 	                'button',
 	                null,
@@ -26828,7 +26885,7 @@
 	            ),
 	            _react2.default.createElement(
 	              _reactRouter.Link,
-	              { to: 'auth/signup' },
+	              { to: '/auth/signup' },
 	              _react2.default.createElement(
 	                'button',
 	                null,
@@ -26854,6 +26911,15 @@
 	      }).then(this.routeToExplore).catch(this.setError);
 	    }
 	  }, {
+	    key: 'facebook',
+	    value: function facebook(e) {
+	      e.preventDefault();
+	      _axios2.default.get('/auth/facebook');
+	      // .then(function(res) {
+	      //   console.log(res);
+	      // });
+	    }
+	  }, {
 	    key: 'handleSignup',
 	    value: function handleSignup(e) {
 	      e.preventDefault();
@@ -26875,6 +26941,7 @@
 	  }, {
 	    key: 'routeToExplore',
 	    value: function routeToExplore(res) {
+	      console.log(res.data);
 	      if (res.data.success) {
 	        localStorage.token = res.data.token;
 	        this.props.router.push('/explore');
@@ -28414,7 +28481,7 @@
 	    ),
 	    _react2.default.createElement(
 	      "form",
-	      { name: "signinForm", onSubmit: props.signin },
+	      { name: "signinForm", onSubmit: props.signin, className: "signinForm" },
 	      _react2.default.createElement(
 	        "div",
 	        null,
@@ -28430,6 +28497,11 @@
 	        { type: "submit", className: "btn" },
 	        "Signin"
 	      )
+	    ),
+	    _react2.default.createElement(
+	      "a",
+	      { href: "/auth/facebook", className: "loginBtn loginBtn--facebook" },
+	      "facebook login"
 	    ),
 	    _react2.default.createElement(
 	      "div",
@@ -28468,7 +28540,7 @@
 	    ),
 	    _react2.default.createElement(
 	      "form",
-	      { name: "signupForm", onSubmit: props.signup },
+	      { name: "signupForm", onSubmit: props.signup, className: "signupForm" },
 	      _react2.default.createElement(
 	        "div",
 	        null,
@@ -28489,6 +28561,11 @@
 	        { type: "submit", className: "btn" },
 	        "Signup"
 	      )
+	    ),
+	    _react2.default.createElement(
+	      "a",
+	      { href: "/auth/facebook", className: "loginBtn loginBtn--facebook" },
+	      "facebook signup"
 	    ),
 	    _react2.default.createElement(
 	      "div",
@@ -29139,8 +29216,7 @@
 	    value: function componentWillReceiveProps(nextProps) {
 	      var value = nextProps.value;
 
-
-	      if (value != null && value !== this.state.value) {
+	      if (value && value !== this.state.value) {
 	        this.setState({ value: value });
 	      }
 	    }
@@ -29601,7 +29677,7 @@
 	                Object.keys(this.state.itineraries).map(function (key) {
 	                  return _react2.default.createElement(
 	                    'button',
-	                    { onClick: _this2.setCurrent.bind(_this2), name: key },
+	                    { onClick: _this2.setCurrent.bind(_this2), name: key, key: key },
 	                    _this2.state.itineraries[key].name
 	                  );
 	                })
@@ -29654,7 +29730,7 @@
 	    key: 'getItineraries',
 	    value: function getItineraries() {
 	      var context = this;
-
+	      console.log('getItineraries');
 	      _axios2.default.get('/itinerary', {
 	        params: {
 	          token: localStorage.token
@@ -29665,6 +29741,11 @@
 	      }).catch(function (error) {
 	        console.log(error, 'error retreiving itineraries');
 	      });
+	    }
+	  }, {
+	    key: 'drawMark',
+	    value: function drawMark() {
+	      console.log(this.state.itineraries);
 	    }
 	  }, {
 	    key: 'buildItineraries',
@@ -29701,9 +29782,8 @@
 	              context.setState({
 	                currentItinerary: context.state.itineraries[Object.keys(context.state.itineraries)[0]]
 	              });
-
-	              console.log(context.state, 'state');
 	            }
+	            context.drawMark();
 	          });
 	        });
 	      }
@@ -29716,8 +29796,10 @@
 
 	      window.initMap = initMap;
 	      var ref = window.document.getElementsByTagName('script')[0];
+	      // console.log('ref', ref);
 	      var script = window.document.createElement('script');
 	      script.src = url;
+	      // console.log('parentNode', ref.parentNode);
 	      ref.parentNode.insertBefore(script, ref);
 	      script.onload = function () {
 	        this.remove();
