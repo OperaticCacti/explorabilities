@@ -29488,6 +29488,11 @@
 	          , removeItem: props.removeItem.bind(undefined, props.list[key].place_id)
 	        });
 	      })
+	    ),
+	    _react2.default.createElement(
+	      'button',
+	      { className: 'email-btn', onClick: props.emailItinerary },
+	      'Email Itinerary'
 	    )
 	  );
 	};
@@ -29689,7 +29694,8 @@
 	            list: this.state.currentItinerary.places,
 	            saveMessage: this.state.saveMessage,
 	            removeItem: this.removeItem.bind(this),
-	            saveItinerary: this.saveItinerary.bind(this)
+	            saveItinerary: this.saveItinerary.bind(this),
+	            emailItinerary: this.emailItinerary.bind(this)
 	          }),
 	          _react2.default.createElement('div', { id: 'map' })
 	        )
@@ -29716,6 +29722,25 @@
 	    value: function saveItinerary() {
 	      //TODO
 	      console.log('save clikced');
+	    }
+	  }, {
+	    key: 'emailItinerary',
+	    value: function emailItinerary() {
+	      var context = this;
+	      (0, _axios2.default)({
+	        method: 'POST',
+	        url: '/itinerary/mail',
+	        params: {
+	          itineraryPlaces: this.state.currentItinerary.places,
+	          itineraryName: this.state.currentItinerary.name
+	        }
+	      }).then(function (res) {
+	        if (res.status === 200) {
+	          window.alert('Mail sent');
+	        }
+	      }).catch(function (err) {
+	        console.error(err);
+	      });
 	    }
 	  }, {
 	    key: 'setCurrent',
