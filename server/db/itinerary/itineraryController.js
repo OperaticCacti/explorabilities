@@ -1,5 +1,6 @@
 const Itinerary = require('./itineraryModel.js');
 const jwt = require('jsonwebtoken');
+const mail = require('../../../sendgrid.js');
 
 //For testing
 // const dbconfig = require('../dbconfig.js');
@@ -53,6 +54,9 @@ const controller = {
       console.log(err, 'error creating itinerary');
       return res.sendStatus(500);
     });
+  },
+  sendMail: function(req, res, next) {
+    mail.sendMail(req, res, next);
   }
 };
 

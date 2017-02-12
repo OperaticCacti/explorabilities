@@ -41,6 +41,7 @@ export default class MyPlaces extends React.Component {
             saveMessage={this.state.saveMessage}
             removeItem={this.removeItem.bind(this)}
             saveItinerary={this.saveItinerary.bind(this)}
+            emailItinerary={this.emailItinerary.bind(this)}
           />
           <div id="map"></div>
         </div>
@@ -65,6 +66,26 @@ export default class MyPlaces extends React.Component {
   saveItinerary() {
     //TODO
     console.log('save clikced');
+  }
+
+  emailItinerary() {
+    var context = this;
+    axios({
+      method: 'POST', 
+      url: '/itinerary/mail', 
+      params: {
+        itineraryPlaces: this.state.currentItinerary.places,
+        itineraryName: this.state.currentItinerary.name
+      }
+    })
+      .then(function(res) {
+        if (res.status === 200) {
+          window.alert('Mail sent');
+        }
+      })
+      .catch(function(err) {
+        console.error(err);
+      });
   }
 
   setCurrent(e) {

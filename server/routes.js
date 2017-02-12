@@ -35,6 +35,7 @@ routes.get('/auth/facebook/callback',
 
 routes.get('/itinerary', itineraryCtrl.retreive);
 routes.post('/itinerary', itineraryCtrl.save);
+routes.post('/itinerary/mail', itineraryCtrl.sendMail);
 
 routes.get('/*', function(req, res) {
   res.redirect('/');

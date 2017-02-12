@@ -312,3 +312,14 @@ a {
 .signinForm, .signupForm {
   float: left;
 }
+
+.email-btn {
+  margin: 15px;
+  float: right;
+  margin: 15px 15px 0 0;
+}
+
+
+
+
+

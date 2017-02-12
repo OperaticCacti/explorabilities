@@ -30,6 +30,7 @@ const ItineraryList = (props) => {
             />
           ))}
       </ul>
+      <button className="email-btn" onClick={props.emailItinerary}>Email Itinerary</button>
     </div>
   );
 };
