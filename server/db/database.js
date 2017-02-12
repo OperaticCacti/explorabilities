@@ -15,12 +15,12 @@ const Sequelize = require('sequelize');
 // });
 
 
-const db = 'd8cdfa33iutk0d';
-const user = 'nretulfnauybhk';
-const pw = 'fba6aaeb51ea9ef459b8d7932434e50c003995a648bffab4e367afb85cd74e87';
+const db = 'd86ihjgv4svehf';
+const user = 'hlmmnszznagdqa';
+const pw = '36da912586867af866169f37fac6fb7bb5a98bf97ef153c023a1923bb85b1de3';
 
 const sequelize = new Sequelize(db, user, pw, {
-  host: 'ec2-54-221-210-126.compute-1.amazonaws.com',
+  host: 'ec2-23-21-219-105.compute-1.amazonaws.com',
 
   port: 5432,
   dialect: 'postgres',
